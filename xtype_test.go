@@ -21,6 +21,19 @@ func TestInt(t *testing.T) {
 	}
 }
 
+func TestUint(t *testing.T) {
+	type T uint
+	i1 := T(100)
+	if n := xtype.Uint(i1); n != 100 {
+		t.Fatal(n)
+	}
+	typ := xtype.TypeOf(i1)
+	i2 := xtype.Make(typ, 200)
+	if n := xtype.Uint(i2); n != 200 {
+		t.Fatal(n)
+	}
+}
+
 func TestFloat32(t *testing.T) {
 	type T float32
 	i1 := T(100.1)
@@ -30,6 +43,19 @@ func TestFloat32(t *testing.T) {
 	typ := xtype.TypeOf(i1)
 	i2 := xtype.Make(typ, float32(200.1))
 	if n := xtype.Float32(i2); n != 200.1 {
+		t.Fatal("new at", n)
+	}
+}
+
+func TestComplex64(t *testing.T) {
+	type T complex64
+	i1 := T(1 + 2i)
+	if n := xtype.Complex64(i1); n != 1+2i {
+		t.Fatal("check", n)
+	}
+	typ := xtype.TypeOf(i1)
+	i2 := xtype.Make(typ, complex64(3+4i))
+	if n := xtype.Complex64(i2); n != 3+4i {
 		t.Fatal("new at", n)
 	}
 }
