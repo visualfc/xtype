@@ -3,6 +3,7 @@ package xtype_test
 import (
 	"fmt"
 	"reflect"
+	"runtime"
 	"testing"
 
 	"github.com/visualfc/xtype"
@@ -235,6 +236,9 @@ func TestAllocPtr(t *testing.T) {
 }
 
 func TestAllocInterfce(t *testing.T) {
+	if runtime.Compiler == "gopherjs" {
+		t.Skip("skip gopherjs")
+	}
 	type T = fmt.Stringer
 	typ := xtype.TypeOfType(reflect.TypeOf((*T)(nil)).Elem())
 	r := xtype.Alloc(typ)
