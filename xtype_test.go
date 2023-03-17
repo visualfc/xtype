@@ -293,6 +293,9 @@ func TestConvertFunc(t *testing.T) {
 	fn := reflect.ValueOf(fntest)
 	typ := reflect.TypeOf((*func(int) int)(nil)).Elem()
 	v := xtype.ConvertFunc(fn, xtype.TypeOfType(typ))
+	if fn.Type() == typ {
+		t.Fatal("change org type")
+	}
 	if v.Type() != typ {
 		t.Fatalf("error %v != %v", v.Type(), typ)
 	}
