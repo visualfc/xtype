@@ -282,3 +282,24 @@ func TestNewInterfce(t *testing.T) {
 		panic(s)
 	}
 }
+
+type N int
+
+func fntest(n N) N {
+	return n + 100
+}
+
+func TestConvertFunc(t *testing.T) {
+	fn := reflect.ValueOf(fntest)
+	typ := reflect.TypeOf((*func(int) int)(nil)).Elem()
+	v := xtype.ConvertFunc(fn, xtype.TypeOfType(typ))
+	if fn.Type() == typ {
+		t.Fatal("change org type")
+	}
+	if v.Type() != typ {
+		t.Fatalf("error %v != %v", v.Type(), typ)
+	}
+	if n := v.Interface().(func(int) int)(100); n != 200 {
+		t.Fatalf("error %v != 200", n)
+	}
+}

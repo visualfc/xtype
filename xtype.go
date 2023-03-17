@@ -683,3 +683,11 @@ func SetType(i interface{}, typ Type) interface{} {
 	p.typ = unsafe.Pointer(typ)
 	return i
 }
+
+func ConvertFunc(fn reflect.Value, typ Type) reflect.Value {
+	(*struct {
+		typ Type
+		ptr unsafe.Pointer
+	})(unsafe.Pointer(&fn)).typ = typ
+	return fn
+}
