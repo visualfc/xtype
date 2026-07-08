@@ -10,10 +10,18 @@ import (
 //go:linkname closureOf reflect.closureOf
 func closureOf(ftyp Type) Type
 
-func ConvertFunc(fn reflect.Value, typ Type) reflect.Value {
+func ConvertFuncValue(typ Type, fn reflect.Value) reflect.Value {
 	(*struct {
 		typ Type
 		ptr unsafe.Pointer
 	})(unsafe.Pointer(&fn)).typ = closureOf(typ)
 	return fn
+}
+
+func ConvertFunc(typ Type, i interface{}) interface{} {
+	p := (*eface)(unsafe.Pointer(&i))
+	return *(*interface{})(unsafe.Pointer(&eface{
+		typ:  unsafe.Pointer(closureOf(typ)),
+		word: p.word,
+	}))
 }
