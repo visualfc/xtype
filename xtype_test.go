@@ -289,10 +289,12 @@ func fntest(n N) N {
 	return n + 100
 }
 
-func TestConvertFunc(t *testing.T) {
+type TFunc func(n int) int
+
+func TestConvertFuncValue(t *testing.T) {
 	fn := reflect.ValueOf(fntest)
 	typ := reflect.TypeOf((*func(int) int)(nil)).Elem()
-	v := xtype.ConvertFunc(fn, xtype.TypeOfType(typ))
+	v := xtype.ConvertFuncValue(xtype.TypeOfType(typ), fn)
 	if fn.Type() == typ {
 		t.Fatal("change org type")
 	}
@@ -300,6 +302,22 @@ func TestConvertFunc(t *testing.T) {
 		t.Fatalf("error %v != %v", v.Type(), typ)
 	}
 	if n := v.Interface().(func(int) int)(100); n != 200 {
+		t.Fatalf("error %v != 200", n)
+	}
+}
+
+func TestConvertFunc(t *testing.T) {
+	var base = 100
+	fn := func(n N) N {
+		return n + N(base)
+	}
+	typ := reflect.TypeOf((*TFunc)(nil)).Elem()
+	v := xtype.ConvertFunc(xtype.TypeOfType(typ), fn)
+	nv := reflect.ValueOf(v)
+	if nv.Type() != typ {
+		t.Fatalf("change org type %v %v", nv.Type(), typ)
+	}
+	if n := v.(TFunc)(100); n != 200 {
 		t.Fatalf("error %v != 200", n)
 	}
 }
