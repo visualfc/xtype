@@ -1,3 +1,5 @@
+//go:build !llgo
+
 package xtype
 
 import "unsafe"
@@ -22,6 +24,22 @@ type _type struct {
 	gcdata    *byte
 	str       nameOff
 	ptrToThis typeOff
+}
+
+const (
+	kindDirectIface  = 1 << 5
+	kindMask         = kindDirectIface - 1
+	kindPointer      = 22
+	tflagDirectIface = 1 << 5
+)
+
+func isDirectIface(t *_type) bool {
+	return t.kind&kindDirectIface != 0 || t.tflag&tflagDirectIface != 0
+}
+
+type ptrType struct {
+	_type
+	elem *_type
 }
 
 type nameOff int32

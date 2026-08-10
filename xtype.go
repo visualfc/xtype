@@ -650,7 +650,19 @@ func MakeString(typ Type, v string) interface{} {
 }
 
 func Alloc(typ Type) interface{} {
-	ptr := unsafe_New(typ)
+	t := (*_type)(unsafe.Pointer(typ))
+	var ptr unsafe.Pointer
+	if t.kind&kindMask == kindPointer {
+		// Pointer values live directly in an interface data word. Allocate
+		// the pointed-to value so that word refers to the correct object.
+		elem := Type(unsafe.Pointer((*ptrType)(unsafe.Pointer(typ)).elem))
+		ptr = unsafe_New(elem)
+	} else {
+		ptr = unsafe_New(typ)
+		if isDirectIface(t) {
+			ptr = *(*unsafe.Pointer)(ptr)
+		}
+	}
 	return *(*interface{})(unsafe.Pointer(&eface{
 		typ:  unsafe.Pointer(typ),
 		word: ptr,
