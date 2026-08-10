@@ -1,0 +1,36 @@
+name: Go
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Go ${{ matrix.go-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        go-version: [1.21.x, 1.22.x, 1.23.x, 1.24.x, 1.25.x, 1.26.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -race -v ./...
+
+      - name: Test 386
+        if: runner.os != 'macOS'
+        env:
+          GOARCH: "386"
+        run: go test -v .

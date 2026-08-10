@@ -235,6 +235,28 @@ func TestAllocPtr(t *testing.T) {
 	}
 }
 
+func TestAllocDirectZero(t *testing.T) {
+	type S struct {
+		P *int
+	}
+	type M map[string]int
+	type C chan int
+	type F func()
+
+	if got := xtype.Alloc(xtype.TypeOf(S{})).(S); got.P != nil {
+		t.Fatalf("Alloc(S) = %#v, want zero value", got)
+	}
+	if got := xtype.Alloc(xtype.TypeOf(M(nil))).(M); got != nil {
+		t.Fatalf("Alloc(M) = %#v, want nil", got)
+	}
+	if got := xtype.Alloc(xtype.TypeOf(C(nil))).(C); got != nil {
+		t.Fatalf("Alloc(C) = %#v, want nil", got)
+	}
+	if got := xtype.Alloc(xtype.TypeOf(F(nil))).(F); got != nil {
+		t.Fatalf("Alloc(F) = %#v, want nil", got)
+	}
+}
+
 func TestAllocInterfce(t *testing.T) {
 	if runtime.Compiler == "gopherjs" {
 		t.Skip("skip gopherjs")
